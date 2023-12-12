@@ -6,7 +6,7 @@ import logging
 from langchain.callbacks.manager import Callbacks
 from langchain.schema import LLMResult, BaseMessage, ChatGeneration
 
-from core.callback_handler.std_out_callback_handler import DifyStreamingStdOutCallbackHandler, DifyStdOutCallbackHandler
+from core.callback_handler.std_out_callback_handler import LexiStreamingStdOutCallbackHandler, LexiStdOutCallbackHandler
 from core.helper import moderation
 from core.model_providers.models.base import BaseProviderModel
 from core.model_providers.models.entity.message import PromptMessage, MessageType, LLMRunResult, to_lc_messages
@@ -47,9 +47,9 @@ class BaseLLM(BaseProviderModel):
         self.streaming = streaming
 
         if streaming:
-            default_callback = DifyStreamingStdOutCallbackHandler()
+            default_callback = LexiStreamingStdOutCallbackHandler()
         else:
-            default_callback = DifyStdOutCallbackHandler()
+            default_callback = LexiStdOutCallbackHandler()
 
         if not callbacks:
             callbacks = [default_callback]

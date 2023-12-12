@@ -16,7 +16,7 @@ from core.agent.agent_executor import AgentExecutor, PlanningStrategy, AgentConf
 from core.callback_handler.agent_loop_gather_callback_handler import AgentLoopGatherCallbackHandler
 from core.callback_handler.dataset_tool_callback_handler import DatasetToolCallbackHandler
 from core.callback_handler.main_chain_gather_callback_handler import MainChainGatherCallbackHandler
-from core.callback_handler.std_out_callback_handler import DifyStdOutCallbackHandler
+from core.callback_handler.std_out_callback_handler import LexiStdOutCallbackHandler
 from core.conversation_message_task import ConversationMessageTask
 from core.model_providers.error import ProviderTokenNotInitError
 from core.model_providers.model_factory import ModelFactory
@@ -112,7 +112,7 @@ class OrchestratorRuleParser:
 
             tools = self.to_tools(
                 tool_configs=tool_configs,
-                callbacks=[agent_callback, DifyStdOutCallbackHandler()],
+                callbacks=[agent_callback, LexiStdOutCallbackHandler()],
                 agent_model_instance=agent_model_instance,
                 conversation_message_task=conversation_message_task,
                 rest_tokens=rest_tokens,

@@ -10,7 +10,7 @@ from extensions.ext_database import db
 from .account import Account, Tenant
 
 
-class DifySetup(db.Model):
+class LexiSetup(db.Model):
     __tablename__ = 'dify_setups'
     __table_args__ = (
         db.PrimaryKeyConstraint('version', name='dify_setup_pkey'),

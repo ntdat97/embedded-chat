@@ -1,4 +1,4 @@
-# Dify Backend API
+# Lexi Backend API
 
 ## Usage
 

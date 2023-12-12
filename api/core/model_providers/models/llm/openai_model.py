@@ -115,7 +115,7 @@ class OpenAIModel(BaseLLM):
         if self.name.startswith('gpt-4') \
                 and self.model_provider.provider.provider_type == ProviderType.SYSTEM.value \
                 and self.model_provider.provider.quota_type == ProviderQuotaType.TRIAL.value:
-            raise ModelCurrentlyNotSupportError("Dify Hosted OpenAI GPT-4 currently not support.")
+            raise ModelCurrentlyNotSupportError("Lexi Hosted OpenAI GPT-4 currently not support.")
 
         prompts = self._get_prompt_from_messages(messages)
 
