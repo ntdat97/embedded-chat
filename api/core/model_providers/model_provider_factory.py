@@ -78,6 +78,9 @@ class ModelProviderFactory:
         elif provider_name == 'jina':
             from core.model_providers.providers.jina_provider import JinaProvider
             return JinaProvider
+        elif provider_name == 'gemini':
+            from core.model_providers.providers.gemini_provider import GeminiProvider
+            return GeminiProvider
         else:
             raise NotImplementedError
 
