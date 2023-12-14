@@ -55,3 +55,5 @@ werkzeug==2.3.7
 pymilvus==2.3.0
 qdrant-client==1.6.4
 cohere~=4.32
+langchain-google-genai~=0.0.3
+google-cloud-aiplatform>=1.26.1

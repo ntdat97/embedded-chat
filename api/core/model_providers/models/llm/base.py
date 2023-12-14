@@ -9,7 +9,8 @@ from langchain.schema import LLMResult, BaseMessage, ChatGeneration
 from core.callback_handler.std_out_callback_handler import LexiStreamingStdOutCallbackHandler, LexiStdOutCallbackHandler
 from core.helper import moderation
 from core.model_providers.models.base import BaseProviderModel
-from core.model_providers.models.entity.message import PromptMessage, MessageType, LLMRunResult, to_lc_messages
+from core.model_providers.models.entity.message import PromptMessage, MessageType, LLMRunResult, to_lc_messages, \
+    to_lc_gemini_messages
 from core.model_providers.models.entity.model_params import ModelType, ModelKwargs, ModelMode, ModelKwargsRules
 from core.model_providers.providers.base import BaseModelProvider
 from core.third_party.langchain.llms.fake import FakeLLM
@@ -158,6 +159,8 @@ class BaseLLM(BaseProviderModel):
 
         if self.streaming and not self.support_streaming:
             # use FakeLLM to simulate streaming when current model not support streaming but streaming is True
+            if self.name == 'gemini-pro' and type(completion_content) != str:
+                completion_content = completion_content[0]['text']
             prompts = self._get_prompt_from_messages(messages, ModelMode.CHAT)
             fake_llm = FakeLLM(
                 response=completion_content,
@@ -173,6 +176,8 @@ class BaseLLM(BaseProviderModel):
             total_tokens = result.llm_output['token_usage']['total_tokens']
         else:
             prompt_tokens = self.get_num_tokens(messages)
+            if (self.name == 'gemini-pro'):
+                completion_content = completion_content[0]['text']
             completion_tokens = self.get_num_tokens(
                 [PromptMessage(content=completion_content, type=MessageType.ASSISTANT)])
             total_tokens = prompt_tokens + completion_tokens
@@ -315,7 +320,7 @@ class BaseLLM(BaseProviderModel):
         return False
 
     def _get_prompt_from_messages(self, messages: List[PromptMessage],
-                                  model_mode: Optional[ModelMode] = None) -> Union[str , List[BaseMessage]]:
+                                  model_mode: Optional[ModelMode] = None) -> Union[str, List[BaseMessage]]:
         if not model_mode:
             model_mode = self.model_mode
 
@@ -327,6 +332,9 @@ class BaseLLM(BaseProviderModel):
         else:
             if len(messages) == 0:
                 return []
+
+            if (self.name == 'gemini-pro'):
+                return to_lc_gemini_messages(messages)
 
             return to_lc_messages(messages)
 

@@ -11,6 +11,7 @@ from core.model_providers.models.entity.model_params import ModelMode
 from core.model_providers.models.entity.message import PromptMessage, MessageType, to_prompt_messages, PromptMessageFile
 from core.model_providers.models.llm.base import BaseLLM
 from core.model_providers.models.llm.baichuan_model import BaichuanModel
+from core.model_providers.models.llm.gemini_model import GeminiModel
 from core.model_providers.models.llm.huggingface_hub_model import HuggingfaceHubModel
 from core.model_providers.models.llm.openllm_model import OpenLLMModel
 from core.model_providers.models.llm.xinference_model import XinferenceModel
@@ -174,11 +175,13 @@ class PromptTransform:
 
         prompt = re.sub(r'<\|.*?\|>', '', prompt)
 
-        prompt_messages.append(PromptMessage(type=MessageType.SYSTEM, content=prompt))
-
         self._append_chat_histories(memory, prompt_messages, model_instance)
-
-        prompt_messages.append(PromptMessage(type=MessageType.USER, content=query, files=files))
+        if isinstance(model_instance, GeminiModel):
+            prompt_messages.append(PromptMessage(type=MessageType.ASSISTANT, content=prompt))
+            prompt_messages.append(PromptMessage(type=MessageType.USER, content=query, files=files))
+        else:
+            prompt_messages.append(PromptMessage(type=MessageType.SYSTEM, content=prompt))
+            prompt_messages.append(PromptMessage(type=MessageType.USER, content=query, files=files))
 
         return prompt_messages
 

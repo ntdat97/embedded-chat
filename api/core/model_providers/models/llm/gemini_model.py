@@ -9,15 +9,16 @@ from core.model_providers.providers.base import BaseModelProvider
 from core.third_party.langchain.llms.chat_open_ai import EnhanceChatOpenAI
 from core.model_providers.error import LLMBadRequestError, LLMAPIConnectionError, LLMAPIUnavailableError, \
     LLMRateLimitError, LLMAuthorizationError, ModelCurrentlyNotSupportError
+from core.third_party.langchain.llms.gemini_llm import EnhanceGemini
 from core.third_party.langchain.llms.open_ai import EnhanceOpenAI
 from core.model_providers.models.llm.base import BaseLLM
 from core.model_providers.models.entity.message import PromptMessage, MessageType
 from core.model_providers.models.entity.model_params import ModelMode, ModelKwargs
 from models.provider import ProviderType, ProviderQuotaType
+from langchain.schema import LLMResult, get_buffer_string
 
 COMPLETION_MODELS = [
-    'gemini-pro',  # 4096 tokens
-    'gemini-pro-vision',  # 2048 tokens
+
 ]
 
 CHAT_MODELS = [
@@ -46,38 +47,12 @@ class GeminiModel(BaseLLM):
 
     def _init_client(self) -> Any:
         provider_model_kwargs = self._to_model_kwargs_input(self.model_rules, self.model_kwargs)
-        if self.name in COMPLETION_MODELS:
-            client = EnhanceOpenAI(
-                model_name=self.name,
-                streaming=self.streaming,
-                callbacks=self.callbacks,
-                request_timeout=60,
-                **self.credentials,
-                **provider_model_kwargs
-            )
-        else:
-            # Fine-tuning is currently only available for the following base models:
-            # davinci, curie, babbage, and ada.
-            # This means that except for the fixed `completion` model,
-            # all other fine-tuned models are `completion` models.
-            extra_model_kwargs = {
-                'top_p': provider_model_kwargs.get('top_p'),
-                'frequency_penalty': provider_model_kwargs.get('frequency_penalty'),
-                'presence_penalty': provider_model_kwargs.get('presence_penalty'),
-            }
+        return EnhanceGemini(
+            model=self.name,
+            google_api_key=self.credentials.get('google_api_key'),
+            **provider_model_kwargs
+        )
 
-            client = EnhanceChatOpenAI(
-                model_name=self.name,
-                temperature=provider_model_kwargs.get('temperature'),
-                max_tokens=provider_model_kwargs.get('max_tokens'),
-                model_kwargs=extra_model_kwargs,
-                streaming=self.streaming,
-                callbacks=self.callbacks,
-                request_timeout=60,
-                **self.credentials
-            )
-
-        return client
 
     def _run(self, messages: List[PromptMessage],
              stop: Optional[List[str]] = None,
@@ -91,27 +66,21 @@ class GeminiModel(BaseLLM):
         :param callbacks:
         :return:
         """
-        if self.name.startswith('gpt-4') \
-                and self.model_provider.provider.provider_type == ProviderType.SYSTEM.value \
-                and self.model_provider.provider.quota_type == ProviderQuotaType.TRIAL.value:
-            raise ModelCurrentlyNotSupportError("Lexi Hosted OpenAI GPT-4 currently not support.")
 
         prompts = self._get_prompt_from_messages(messages)
 
+        extra_kwargs = {}
+
         generate_kwargs = {
             'stop': stop,
-            'callbacks': callbacks
+            "callbacks": callbacks,
         }
-
         if isinstance(prompts, str):
             generate_kwargs['prompts'] = [prompts]
         else:
             generate_kwargs['messages'] = [prompts]
+        return self._client.generate([prompts], stop, callbacks, **extra_kwargs)
 
-        if 'functions' in kwargs:
-            generate_kwargs['functions'] = kwargs['functions']
-
-        return self._client.generate(**generate_kwargs)
 
     def get_num_tokens(self, messages: List[PromptMessage]) -> int:
         """
@@ -120,11 +89,9 @@ class GeminiModel(BaseLLM):
         :param messages:
         :return:
         """
-        prompts = self._get_prompt_from_messages(messages)
-        if isinstance(prompts, str):
-            return self._client.get_num_tokens(prompts)
-        else:
-            return max(self._client.get_num_tokens_from_messages(prompts) - len(prompts), 0)
+        contents = [message.content for message in messages]
+        return max(self._client.get_num_tokens("".join(contents)), 0)
+
 
     def _set_model_kwargs(self, model_kwargs: ModelKwargs):
         provider_model_kwargs = self._to_model_kwargs_input(self.model_rules, model_kwargs)
@@ -142,6 +109,7 @@ class GeminiModel(BaseLLM):
             self.client.temperature = provider_model_kwargs.get('temperature')
             self.client.max_tokens = provider_model_kwargs.get('max_tokens')
             self.client.model_kwargs = extra_model_kwargs
+
 
     def handle_exceptions(self, ex: Exception) -> Exception:
         if isinstance(ex, openai.error.InvalidRequestError):
@@ -162,33 +130,10 @@ class GeminiModel(BaseLLM):
         else:
             return ex
 
+
     @property
     def support_streaming(self):
-        return True
+        return False
 
-    @property
-    def support_function_call(self):
-        return self.name in FUNCTION_CALL_MODELS
 
-    # def is_model_valid_or_raise(self):
-    #     """
-    #     check is a valid model.
-    #
-    #     :return:
-    #     """
-    #     credentials = self._model_provider.get_credentials()
-    #
-    #     try:
-    #         result = openai.Model.retrieve(
-    #             id=self.name,
-    #             api_key=credentials.get('openai_api_key'),
-    #             request_timeout=60
-    #         )
-    #
-    #         if 'id' not in result or result['id'] != self.name:
-    #             raise LLMNotExistsError(f"OpenAI Model {self.name} not exists.")
-    #     except openai.error.OpenAIError as e:
-    #         raise LLMNotExistsError(f"OpenAI Model {self.name} not exists, cause: {e.__class__.__name__}:{str(e)}")
-    #     except Exception as e:
-    #         logging.exception("OpenAI Model retrieve failed.")
-    #         raise e
+

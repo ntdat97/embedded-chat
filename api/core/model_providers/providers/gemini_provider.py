@@ -96,16 +96,16 @@ class GeminiProvider(BaseModelProvider):
         """
         Validates the given credentials.
         """
-        if 'genai_api_key' not in credentials:
+        if 'google_api_key' not in credentials:
             raise CredentialsValidateFailedError('Gemini API key is required')
 
         try:
-            genai.configure(api_key=credentials['genai_api_key'])
+            genai.configure(api_key=credentials['google_api_key'])
             generation_config = {
                 "temperature": 0.9,
                 "top_p": 1,
                 "top_k": 1,
-                "max_output_tokens": 712094269,
+                "max_output_tokens": 2048,
             }
 
             safety_settings = [
@@ -139,27 +139,36 @@ class GeminiProvider(BaseModelProvider):
 
     @classmethod
     def encrypt_provider_credentials(cls, tenant_id: str, credentials: dict) -> dict:
-        credentials['genai_api_key'] = encrypter.encrypt_token(tenant_id, credentials['genai_api_key'])
+        credentials['google_api_key'] = encrypter.encrypt_token(tenant_id, credentials['google_api_key'])
         return credentials
 
     def get_provider_credentials(self, obfuscated: bool = False) -> dict:
         if self.provider.provider_type == ProviderType.CUSTOM.value:
             try:
-                credentials = json.loads(self.provider.encrypted_config)
+                # credentials = json.loads(self.provider.encrypted_config)
+                # hard core
+                credentials = {
+                    'genai_api_base': None,
+                    'google_api_key': "aaa",
+                }
             except JSONDecodeError:
                 credentials = {
                     'genai_api_base': None,
-                    'genai_api_key': self.provider.encrypted_config,
+                    'google_api_key': self.provider.encrypted_config,
                 }
 
-            if credentials['genai_api_key']:
-                credentials['genai_api_key'] = encrypter.decrypt_token(
-                    self.provider.tenant_id,
-                    credentials['genai_api_key']
-                )
+            if credentials['google_api_key']:
+                # credentials['google_api_key'] = encrypter.decrypt_token(
+                #     self.provider.tenant_id,
+                #     credentials['google_api_key']
+                # )
+                # hard core
+                credentials['google_api_key'] = "AIzaSyCio5LpDO8tzHUTvsiqUySFDds_dSfTmB0"
 
                 if obfuscated:
-                    credentials['genai_api_key'] = encrypter.obfuscated_token(credentials['genai_api_key'])
+                    # credentials['google_api_key'] = encrypter.obfuscated_token(credentials['google_api_key'])
+                    # hard core
+                    credentials['google_api_key'] = "AIzaSyCio5LpDO8tzHUTvsiqUySFDds_dSfTmB0"
 
             if 'genai_api_base' not in credentials or not credentials['genai_api_base']:
                 credentials['genai_api_base'] = None
@@ -171,12 +180,12 @@ class GeminiProvider(BaseModelProvider):
             if hosted_model_providers.openai:
                 return {
                     'genai_api_base': hosted_model_providers.openai.api_base,
-                    'genai_api_key': hosted_model_providers.openai.api_key,
+                    'google_api_key': hosted_model_providers.openai.api_key,
                 }
             else:
                 return {
                     'genai_api_base': None,
-                    'genai_api_key': None,
+                    'google_api_key': None,
                 }
 
     @classmethod
@@ -184,12 +193,9 @@ class GeminiProvider(BaseModelProvider):
         if current_app.config['EDITION'] != 'CLOUD':
             return False
 
-
-
         return False
 
     def should_deduct_quota(self):
-
 
         return False
 
