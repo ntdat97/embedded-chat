@@ -13,9 +13,15 @@ const config: ProviderConfig = {
   item: {
     key: ProviderEnum.gemini,
     titleIcon: {
-      'en': <Gemini className='w-[24px] h-6' />,
+      'en': <div className='flex flex-row gap-1'><Gemini className='w-[24px] h-6' /><div className='font-semibold'>Gemini</div></div>,
       'zh-Hans': <Gemini className='w-[24px] h-6' />,
     },
+    subTitleIcon: <Gemini className='w-6 h-6' />,
+    desc: {
+      'en': 'Gemini: Google AI scalpel, dissecting data, crafting breakthroughs.',
+      'zh-Hans': 'Gemini: Google AI scalpel, dissecting data, crafting breakthroughs.',
+    },
+    bgColor: 'bg-[#F0F0EB]',
     hit: {
       'en': 'Build with Gemini',
       'zh-Hans': 'Build with Gemini',
@@ -25,7 +31,7 @@ const config: ProviderConfig = {
     key: ProviderEnum.gemini,
     title: {
       'en': 'Gemini API Key',
-      'zh-Hans': 'Embedding 模型',
+      'zh-Hans': 'Gemini API Key',
     },
     icon: <Gemini className='w-[58px] h-6' />,
     link: {
