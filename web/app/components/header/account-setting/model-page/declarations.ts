@@ -47,6 +47,7 @@ export enum ProviderEnum {
   'baichuan' = 'baichuan',
   'cohere' = 'cohere',
   'jina' = 'jina',
+  'gemini' = 'gemini',
 }
 
 export type ProviderConfigItem = {

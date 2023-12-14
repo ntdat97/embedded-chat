@@ -30,7 +30,7 @@ import { AlertTriangle } from '@/app/components/base/icons/src/vender/solid/aler
 
 const MODEL_CARD_LIST = [
   config.openai,
-  config.anthropic,
+  config.gemini,
 ]
 
 type DeleteModel = {
@@ -76,6 +76,7 @@ const ModelPage = () => {
       config.xinference,
       config.openllm,
       config.localai,
+      config.gemini,
     ]
   }
   else {
@@ -95,6 +96,7 @@ const ModelPage = () => {
       config.xinference,
       config.openllm,
       config.localai,
+      config.gemini,
     ]
   }
 
