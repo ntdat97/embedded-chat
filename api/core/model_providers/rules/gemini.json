@@ -1,0 +1,24 @@
+{
+  "support_provider_types": [
+    "custom"
+  ],
+  "system_config": null,
+  "model_flexibility": "fixed",
+  "supported_model_types": [
+    "text-generation"
+  ],
+  "price_config": {
+    "gemini": {
+      "prompt": "0.03",
+      "completion": "0.06",
+      "unit": "0.001",
+      "currency": "USD"
+    },
+    "gemini-pro": {
+      "prompt": "0.06",
+      "completion": "0.12",
+      "unit": "0.001",
+      "currency": "USD"
+    }
+  }
+}
