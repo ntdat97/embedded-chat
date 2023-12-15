@@ -108,7 +108,7 @@ const APIKeyInfoPanel: FC = () => {
       {!isCloud && (
         <a
           className='mt-2 flex items-center h-[26px] text-xs  font-medium text-[#155EEF] p-1 space-x-1'
-          href='https://cloud.dify.ai/apps'
+          href='https://cloud.Lexi.ai/apps'
           target='_blank'
         >
           <div>{t('appOverview.apiKeyInfo.tryCloud')}</div>
