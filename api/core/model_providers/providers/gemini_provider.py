@@ -131,7 +131,7 @@ class GeminiProvider(BaseModelProvider):
                                           generation_config=generation_config,
                                           safety_settings=safety_settings)
 
-            model.generate_content([{"role": "user", "content": 'ping'}])
+            model.generate_content(contents=["Ping"])
 
         except Exception as ex:
             logging.exception('Genmini config validation failed')
@@ -145,46 +145,37 @@ class GeminiProvider(BaseModelProvider):
     def get_provider_credentials(self, obfuscated: bool = False) -> dict:
         if self.provider.provider_type == ProviderType.CUSTOM.value:
             try:
-                # credentials = json.loads(self.provider.encrypted_config)
-                # hard core
-                credentials = {
-                    'genai_api_base': None,
-                    'google_api_key': "aaa",
-                }
+                credentials = json.loads(self.provider.encrypted_config)
             except JSONDecodeError:
                 credentials = {
-                    'genai_api_base': None,
+                    'google_api_base': None,
                     'google_api_key': self.provider.encrypted_config,
                 }
 
             if credentials['google_api_key']:
-                # credentials['google_api_key'] = encrypter.decrypt_token(
-                #     self.provider.tenant_id,
-                #     credentials['google_api_key']
-                # )
-                # hard core
-                credentials['google_api_key'] = "AIzaSyCio5LpDO8tzHUTvsiqUySFDds_dSfTmB0"
+                credentials['google_api_key'] = encrypter.decrypt_token(
+                    self.provider.tenant_id,
+                    credentials['google_api_key']
+                )
 
                 if obfuscated:
-                    # credentials['google_api_key'] = encrypter.obfuscated_token(credentials['google_api_key'])
-                    # hard core
-                    credentials['google_api_key'] = "AIzaSyCio5LpDO8tzHUTvsiqUySFDds_dSfTmB0"
+                    credentials['google_api_key'] = encrypter.obfuscated_token(credentials['google_api_key'])
 
-            if 'genai_api_base' not in credentials or not credentials['genai_api_base']:
-                credentials['genai_api_base'] = None
+            if 'google_api_base' not in credentials or not credentials['google_api_base']:
+                credentials['google_api_base'] = None
             else:
-                credentials['genai_api_base'] = credentials['genai_api_base'] + '/v1beta'
+                credentials['google_api_base'] = credentials['google_api_base'] + '/v1beta'
 
             return credentials
         else:
             if hosted_model_providers.openai:
                 return {
-                    'genai_api_base': hosted_model_providers.openai.api_base,
+                    'google_api_base': hosted_model_providers.openai.api_base,
                     'google_api_key': hosted_model_providers.openai.api_key,
                 }
             else:
                 return {
-                    'genai_api_base': None,
+                    'google_api_base': None,
                     'google_api_key': None,
                 }
 

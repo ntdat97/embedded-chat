@@ -58,10 +58,8 @@ class ModelProviderFactory:
             from core.model_providers.providers.azure_openai_provider import AzureOpenAIProvider
             return AzureOpenAIProvider
         elif provider_name == 'replicate':
-            # from core.model_providers.providers.replicate_provider import ReplicateProvider
-            # return ReplicateProvider
-            from core.model_providers.providers.gemini_provider import GeminiProvider
-            return GeminiProvider
+            from core.model_providers.providers.replicate_provider import ReplicateProvider
+            return ReplicateProvider
         elif provider_name == 'huggingface_hub':
             from core.model_providers.providers.huggingface_hub_provider import HuggingfaceHubProvider
             return HuggingfaceHubProvider

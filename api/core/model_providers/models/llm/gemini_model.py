@@ -53,7 +53,6 @@ class GeminiModel(BaseLLM):
             **provider_model_kwargs
         )
 
-
     def _run(self, messages: List[PromptMessage],
              stop: Optional[List[str]] = None,
              callbacks: Callbacks = None,
@@ -81,7 +80,6 @@ class GeminiModel(BaseLLM):
             generate_kwargs['messages'] = [prompts]
         return self._client.generate([prompts], stop, callbacks, **extra_kwargs)
 
-
     def get_num_tokens(self, messages: List[PromptMessage]) -> int:
         """
         get num tokens of prompt messages.
@@ -91,7 +89,6 @@ class GeminiModel(BaseLLM):
         """
         contents = [message.content for message in messages]
         return max(self._client.get_num_tokens("".join(contents)), 0)
-
 
     def _set_model_kwargs(self, model_kwargs: ModelKwargs):
         provider_model_kwargs = self._to_model_kwargs_input(self.model_rules, model_kwargs)
@@ -109,7 +106,6 @@ class GeminiModel(BaseLLM):
             self.client.temperature = provider_model_kwargs.get('temperature')
             self.client.max_tokens = provider_model_kwargs.get('max_tokens')
             self.client.model_kwargs = extra_model_kwargs
-
 
     def handle_exceptions(self, ex: Exception) -> Exception:
         if isinstance(ex, openai.error.InvalidRequestError):
@@ -130,10 +126,6 @@ class GeminiModel(BaseLLM):
         else:
             return ex
 
-
     @property
     def support_streaming(self):
         return False
-
-
-
