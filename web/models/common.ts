@@ -67,9 +67,6 @@ export enum ProviderName {
   ANTHROPIC = 'anthropic',
   Replicate = 'replicate',
   HuggingfaceHub = 'huggingface_hub',
-  MiniMax = 'minimax',
-  Spark = 'spark',
-  Tongyi = 'tongyi',
   ChatGLM = 'chatglm',
   Gemini = 'gemini',
 }

@@ -6,9 +6,6 @@ export enum ProviderType {
   azure_openai = 'azure_openai',
   replicate = 'replicate',
   huggingface_hub = 'huggingface_hub',
-  minimax = 'minimax',
-  tongyi = 'tongyi',
-  spark = 'spark',
   gemini = 'gemini',
 }
 

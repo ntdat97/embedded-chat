@@ -10,11 +10,9 @@ from langchain.schema import BaseMessage
 from core.model_providers.models.entity.model_params import ModelMode
 from core.model_providers.models.entity.message import PromptMessage, MessageType, to_prompt_messages, PromptMessageFile
 from core.model_providers.models.llm.base import BaseLLM
-from core.model_providers.models.llm.baichuan_model import BaichuanModel
 from core.model_providers.models.llm.gemini_model import GeminiModel
 from core.model_providers.models.llm.huggingface_hub_model import HuggingfaceHubModel
 from core.model_providers.models.llm.openllm_model import OpenLLMModel
-from core.model_providers.models.llm.xinference_model import XinferenceModel
 from core.prompt.prompt_builder import PromptBuilder
 from core.prompt.prompt_template import PromptTemplateParser
 from models.model import AppModelConfig
@@ -112,14 +110,6 @@ class PromptTransform:
         return to_prompt_messages(external_context[memory_key])
 
     def _prompt_file_name(self, mode: str, model_instance: BaseLLM) -> str:
-        # baichuan
-        if isinstance(model_instance, BaichuanModel):
-            return self._prompt_file_name_for_baichuan(mode)
-
-        baichuan_model_hosted_platforms = (HuggingfaceHubModel, OpenLLMModel, XinferenceModel)
-        if isinstance(model_instance, baichuan_model_hosted_platforms) and 'baichuan' in model_instance.name.lower():
-            return self._prompt_file_name_for_baichuan(mode)
-
         # common
         if mode == 'completion':
             return 'common_completion'
