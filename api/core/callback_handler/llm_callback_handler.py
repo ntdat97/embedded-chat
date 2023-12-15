@@ -14,6 +14,7 @@ from core.conversation_message_task import ConversationMessageTask, Conversation
 from core.model_providers.models.entity.message import to_prompt_messages, PromptMessage, LCHumanMessageWithFiles, \
     ImagePromptMessageFile
 from core.model_providers.models.llm.base import BaseLLM
+from core.model_providers.models.llm.gemini_model import GeminiModel
 from core.moderation.base import ModerationOutputsResult, ModerationAction
 from core.moderation.factory import ModerationFactory
 
@@ -85,7 +86,7 @@ class LLMCallbackHandler(BaseCallbackHandler):
         self.llm_message.prompt_tokens = self.model_instance.get_num_tokens(to_prompt_messages(messages[0]))
 
     def on_llm_start(
-        self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
+            self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
     ) -> None:
         self.llm_message.prompt = [{
             "role": 'user',
@@ -95,6 +96,7 @@ class LLMCallbackHandler(BaseCallbackHandler):
         self.llm_message.prompt_tokens = self.model_instance.get_num_tokens([PromptMessage(content=prompts[0])])
 
     def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
+        is_gemini_model = isinstance(self.model_instance, GeminiModel)
         if self.output_moderation_handler:
             self.output_moderation_handler.stop_thread()
 
@@ -103,7 +105,10 @@ class LLMCallbackHandler(BaseCallbackHandler):
                 public_event=True if self.conversation_message_task.streaming else False
             )
         else:
-            self.llm_message.completion = response.generations[0][0].text
+            text = response.generations[0][0].text[0]
+            self.llm_message.completion = text
+            if (is_gemini_model and isinstance(text, dict)):
+                self.llm_message.completion = text['text']
 
         if not self.conversation_message_task.streaming:
             self.conversation_message_task.append_message_text(self.llm_message.completion)
@@ -118,8 +123,10 @@ class LLMCallbackHandler(BaseCallbackHandler):
                 self.llm_message.completion_tokens = self.model_instance.get_num_tokens(
                     [PromptMessage(content=self.llm_message.completion)])
         else:
+            completion = self.llm_message.completion
+
             self.llm_message.completion_tokens = self.model_instance.get_num_tokens(
-                [PromptMessage(content=self.llm_message.completion)])
+                [PromptMessage(content=completion)])
 
         self.conversation_message_task.save_message(self.llm_message)
 

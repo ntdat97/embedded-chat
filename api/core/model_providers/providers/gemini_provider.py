@@ -96,16 +96,16 @@ class GeminiProvider(BaseModelProvider):
         """
         Validates the given credentials.
         """
-        if 'genai_api_key' not in credentials:
+        if 'google_api_key' not in credentials:
             raise CredentialsValidateFailedError('Gemini API key is required')
 
         try:
-            genai.configure(api_key=credentials['genai_api_key'])
+            genai.configure(api_key=credentials['google_api_key'])
             generation_config = {
                 "temperature": 0.9,
                 "top_p": 1,
                 "top_k": 1,
-                "max_output_tokens": 712094269,
+                "max_output_tokens": 2048,
             }
 
             safety_settings = [
@@ -131,7 +131,7 @@ class GeminiProvider(BaseModelProvider):
                                           generation_config=generation_config,
                                           safety_settings=safety_settings)
 
-            model.generate_content([{"role": "user", "content": 'ping'}])
+            model.generate_content(contents=["Ping"])
 
         except Exception as ex:
             logging.exception('Genmini config validation failed')
@@ -139,7 +139,7 @@ class GeminiProvider(BaseModelProvider):
 
     @classmethod
     def encrypt_provider_credentials(cls, tenant_id: str, credentials: dict) -> dict:
-        credentials['genai_api_key'] = encrypter.encrypt_token(tenant_id, credentials['genai_api_key'])
+        credentials['google_api_key'] = encrypter.encrypt_token(tenant_id, credentials['google_api_key'])
         return credentials
 
     def get_provider_credentials(self, obfuscated: bool = False) -> dict:
@@ -148,35 +148,35 @@ class GeminiProvider(BaseModelProvider):
                 credentials = json.loads(self.provider.encrypted_config)
             except JSONDecodeError:
                 credentials = {
-                    'genai_api_base': None,
-                    'genai_api_key': self.provider.encrypted_config,
+                    'google_api_base': None,
+                    'google_api_key': self.provider.encrypted_config,
                 }
 
-            if credentials['genai_api_key']:
-                credentials['genai_api_key'] = encrypter.decrypt_token(
+            if credentials['google_api_key']:
+                credentials['google_api_key'] = encrypter.decrypt_token(
                     self.provider.tenant_id,
-                    credentials['genai_api_key']
+                    credentials['google_api_key']
                 )
 
                 if obfuscated:
-                    credentials['genai_api_key'] = encrypter.obfuscated_token(credentials['genai_api_key'])
+                    credentials['google_api_key'] = encrypter.obfuscated_token(credentials['google_api_key'])
 
-            if 'genai_api_base' not in credentials or not credentials['genai_api_base']:
-                credentials['genai_api_base'] = None
+            if 'google_api_base' not in credentials or not credentials['google_api_base']:
+                credentials['google_api_base'] = None
             else:
-                credentials['genai_api_base'] = credentials['genai_api_base'] + '/v1beta'
+                credentials['google_api_base'] = credentials['google_api_base'] + '/v1beta'
 
             return credentials
         else:
             if hosted_model_providers.openai:
                 return {
-                    'genai_api_base': hosted_model_providers.openai.api_base,
-                    'genai_api_key': hosted_model_providers.openai.api_key,
+                    'google_api_base': hosted_model_providers.openai.api_base,
+                    'google_api_key': hosted_model_providers.openai.api_key,
                 }
             else:
                 return {
-                    'genai_api_base': None,
-                    'genai_api_key': None,
+                    'google_api_base': None,
+                    'google_api_key': None,
                 }
 
     @classmethod
@@ -184,12 +184,9 @@ class GeminiProvider(BaseModelProvider):
         if current_app.config['EDITION'] != 'CLOUD':
             return False
 
-
-
         return False
 
     def should_deduct_quota(self):
-
 
         return False
 
