@@ -1,9 +1,9 @@
 import enum
-from typing import Any, cast, Union, List, Dict
+from typing import Any
 
 from langchain.schema import HumanMessage, AIMessage, SystemMessage, BaseMessage, FunctionMessage
-from pydantic import BaseModel
 from langchain_core.messages import HumanMessage as GHumanMessage, AIMessage as GAIMessage
+from pydantic import BaseModel
 
 
 class LLMRunResult(BaseModel):
@@ -62,18 +62,60 @@ class LCHumanMessageWithFiles(HumanMessage):
 
 def to_lc_gemini_messages(messages: list[PromptMessage]):
     lc_messages = []
+    contents = []
     for message in messages:
-        if message.type == MessageType.USER:
-            if not message.files:
-                lc_messages.append(GHumanMessage(content=message.content))
-                # lc_messages.append(GHumanMessage(content="Hello"))
-            else:
-                lc_messages.append(LCHumanMessageWithFiles(content=message.content, files=message.files))
-        elif message.type == MessageType.ASSISTANT and message.content:
-            lc_messages.append(GAIMessage(content=message.content))
-        # elif message.type == MessageType.SYSTEM:
-        #     lc_messages.append(SystemMessage(content=message.content))
+        content = {
+            "type": "text",
+            "text": message.content,
+        }
+        contents.append(content)
+    lc_messages.append(GHumanMessage(content=contents))
+    # use for future development
+    # for message in messages:
+    #     content = {
+    #         "type": "text",
+    #         "text": message.content,
+    #     }
+    #     if message.type == MessageType.USER:
+    #         if not message.files:
+    #             lc_messages.append(GHumanMessage(content=[content]))
+    #             # lc_messages.append(GHumanMessage(content="Hello"))
+    #         else:
+    #             lc_messages.append(LCHumanMessageWithFiles(content=message.content, files=message.files))
+    #     elif message.type == MessageType.ASSISTANT and message.content:
+    #         content = {
+    #             "type": "text",
+    #             "text": message.content,
+    #         }
+    #         lc_messages.insert(0, GAIMessage(content=[content]))
+    # elif message.type == MessageType.SYSTEM:
+    #     lc_messages.append(SystemMessage(content=message.content))
     return lc_messages
+
+
+def to_gemini_prompt_messages(messages: list[BaseMessage]):
+    prompt_messages = []
+    for message in messages:
+        if isinstance(message, GHumanMessage):
+            if isinstance(message, LCHumanMessageWithFiles):
+                prompt_messages.append(PromptMessage(
+                    content=message.content,
+                    type=MessageType.USER,
+                    files=message.files
+                ))
+            else:
+                prompt_messages.append(PromptMessage(content=message.content, type=MessageType.USER))
+        elif isinstance(message, GAIMessage):
+            message_kwargs = {
+                'content': message.content,
+                'type': MessageType.ASSISTANT
+            }
+
+            if 'function_call' in message.additional_kwargs:
+                message_kwargs['function_call'] = message.additional_kwargs['function_call']
+
+            prompt_messages.insert(0, PromptMessage(**message_kwargs))
+    return prompt_messages
 
 
 def to_lc_messages(messages: list[PromptMessage]):
@@ -120,31 +162,6 @@ def to_prompt_messages(messages: list[BaseMessage]):
             prompt_messages.append(PromptMessage(content=message.content, type=MessageType.SYSTEM))
         elif isinstance(message, FunctionMessage):
             prompt_messages.append(PromptMessage(content=message.content, type=MessageType.USER))
-    return prompt_messages
-
-
-def to_gemini_prompt_messages(messages: list[BaseMessage]):
-    prompt_messages = []
-    for message in messages:
-        if isinstance(message, GHumanMessage):
-            if isinstance(message, LCHumanMessageWithFiles):
-                prompt_messages.append(PromptMessage(
-                    content=message.content,
-                    type=MessageType.USER,
-                    files=message.files
-                ))
-            else:
-                prompt_messages.append(PromptMessage(content=message.content, type=MessageType.USER))
-        elif isinstance(message, GAIMessage):
-            message_kwargs = {
-                'content': message.content,
-                'type': MessageType.ASSISTANT
-            }
-
-            if 'function_call' in message.additional_kwargs:
-                message_kwargs['function_call'] = message.additional_kwargs['function_call']
-
-            prompt_messages.append(PromptMessage(**message_kwargs))
     return prompt_messages
 
 
