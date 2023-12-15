@@ -41,11 +41,11 @@ const config: ProviderConfig = {
         'zh-Hans': 'Get your API key from Google AI Studio',
       },
     },
-    validateKeys: ['gemini_api_key'],
+    validateKeys: ['google_api_key'],
     fields: [
       {
         type: 'text',
-        key: 'gemini_api_key',
+        key: 'google_api_key',
         required: true,
         label: {
           'en': 'Gemini API Key',
