@@ -9,6 +9,7 @@ export enum ProviderType {
   minimax = 'minimax',
   tongyi = 'tongyi',
   spark = 'spark',
+  gemini = 'gemini',
 }
 
 export enum AppType {
