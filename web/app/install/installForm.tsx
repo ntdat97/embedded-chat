@@ -168,7 +168,7 @@ const InstallForm = () => {
               <Link
                 className='text-primary-600'
                 target={'_blank'}
-                href={`https://docs.dify.ai/${locale === 'en' ? '' : `v/${locale.toLowerCase()}/`}community/open-source`}
+                href={`https://docs.Lexi.ai/${locale === 'en' ? '' : `v/${locale.toLowerCase()}/`}community/open-source`}
               >{t('login.license.link')}</Link>
             </div>
           </div>

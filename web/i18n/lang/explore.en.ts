@@ -16,7 +16,7 @@ const translation = {
     },
   },
   apps: {
-    title: 'Explore Apps by Dify',
+    title: 'Explore Apps by Lexi',
     description: 'Use these template apps instantly or customize your own apps based on the templates.',
     allCategories: 'All Categories',
   },
@@ -37,7 +37,7 @@ const translation = {
     HR: 'HR',
   },
   universalChat: {
-    welcome: 'Start chat with Dify',
+    welcome: 'Start chat with Lexi',
     welcomeDescribe: 'Your AI conversation companion for personalized assistance',
     model: 'Model',
     plugins: {
