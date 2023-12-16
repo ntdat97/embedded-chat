@@ -105,7 +105,7 @@ class LLMCallbackHandler(BaseCallbackHandler):
                 public_event=True if self.conversation_message_task.streaming else False
             )
         else:
-            text = response.generations[0][0].text[0]
+            text = response.generations[0][0].text
             self.llm_message.completion = text
             if (is_gemini_model and isinstance(text, dict)):
                 self.llm_message.completion = text['text']

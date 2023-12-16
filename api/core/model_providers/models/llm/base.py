@@ -14,6 +14,7 @@ from core.model_providers.models.entity.message import PromptMessage, MessageTyp
 from core.model_providers.models.entity.model_params import ModelType, ModelKwargs, ModelMode, ModelKwargsRules
 from core.model_providers.providers.base import BaseModelProvider
 from core.third_party.langchain.llms.fake import FakeLLM
+from constants.model import GOOGLE_CHAT_MODEL
 
 logger = logging.getLogger(__name__)
 
@@ -159,7 +160,7 @@ class BaseLLM(BaseProviderModel):
 
         if self.streaming and not self.support_streaming:
             # use FakeLLM to simulate streaming when current model not support streaming but streaming is True
-            if self.name == 'gemini-pro' and type(completion_content) != str:
+            if self.name in GOOGLE_CHAT_MODEL and type(completion_content) != str:
                 completion_content = completion_content[0]['text']
             prompts = self._get_prompt_from_messages(messages, ModelMode.CHAT)
             fake_llm = FakeLLM(
@@ -176,7 +177,7 @@ class BaseLLM(BaseProviderModel):
             total_tokens = result.llm_output['token_usage']['total_tokens']
         else:
             prompt_tokens = self.get_num_tokens(messages)
-            if (self.name == 'gemini-pro'):
+            if self.name in GOOGLE_CHAT_MODEL:
                 completion_content = completion_content[0]['text']
             completion_tokens = self.get_num_tokens(
                 [PromptMessage(content=completion_content, type=MessageType.ASSISTANT)])
@@ -333,7 +334,7 @@ class BaseLLM(BaseProviderModel):
             if len(messages) == 0:
                 return []
 
-            if (self.name == 'gemini-pro'):
+            if self.name in GOOGLE_CHAT_MODEL:
                 return to_lc_gemini_messages(messages)
 
             return to_lc_messages(messages)
