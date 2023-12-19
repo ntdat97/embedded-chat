@@ -3,6 +3,11 @@
   background: url(./icons/robot.svg) 100%/100%;
 }
 
+.answerIconDefault {
+  position: relative;
+  background: url(./icons/logo-default.svg) 100%/100%;
+}
+
 .typeingIcon {
   position: absolute;
   top: 0px;

@@ -388,6 +388,7 @@ const Main: FC<IMainProps> = ({
           name: t('share.chat.newChatDefaultName'),
           introduction,
         })
+        console.log(siteInfo)
         setSiteInfo(siteInfo as SiteInfo)
         setPromptConfig({
           prompt_template,
@@ -682,7 +683,7 @@ const Main: FC<IMainProps> = ({
   }
 
   return (
-    <div className='bg-gray-100 h-full flex flex-col'>
+    <div className='bg-gray-100 h-full flex flex-col rounded-2xl'>
       {!isInstalledApp && (
         <Header
           title={siteInfo.title}

@@ -185,7 +185,7 @@ const Answer: FC<IAnswerProps> = ({
       <div className='flex items-start'>
         {
           answerIcon || (
-            <div className={`${s.answerIcon} w-10 h-10 shrink-0`}>
+            <div className={`${s.answerIconDefault} w-10 h-10 shrink-0`}>
               {isResponsing
                 && <div className={s.typeingIcon}>
                   <LoadingAnim type='avatar' />
