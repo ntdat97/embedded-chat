@@ -109,6 +109,7 @@ const Main: FC<IMainProps> = ({
     setExistConversationInfo,
   } = useConversation()
   const [hasMore, setHasMore] = useState<boolean>(true)
+  const [isNewOpenChat, setIsNewOpenChat] = useState<boolean>(false)
   const [hasPinnedMore, setHasPinnedMore] = useState<boolean>(true)
   const onMoreLoaded = ({ data: conversations, has_more }: any) => {
     setHasMore(has_more)
@@ -668,7 +669,10 @@ const Main: FC<IMainProps> = ({
         onUnpin={handleUnpin}
         controlUpdateList={controlUpdateConversationList}
         onDelete={handleDelete}
-        onStartChat={() => handleConversationIdChange('-1')}
+        onStartChat={() => {
+          setIsNewOpenChat(true)
+          handleConversationIdChange('-1')
+        }}
       />
     )
   }
@@ -708,7 +712,7 @@ const Main: FC<IMainProps> = ({
       >
         {/* sidebar */}
         {!isMobile && renderSidebar()}
-        {isMobile && isShowSidebar && (
+        {/* {isMobile && true && (
           <div className='fixed inset-0 z-50'
             style={{ backgroundColor: 'rgba(35, 56, 118, 0.2)' }}
             onClick={hideSidebar}
@@ -717,25 +721,30 @@ const Main: FC<IMainProps> = ({
               {renderSidebar()}
             </div>
           </div>
-        )}
+        )} */}
         {/* main */}
         <div className={cn(
           'h-full flex-grow flex flex-col overflow-y-auto',
         )
         }>
-          <ConfigSence
-            conversationName={conversationName}
-            hasSetInputs={hasSetInputs}
-            isPublicVersion={isPublicVersion}
-            siteInfo={siteInfo}
-            promptConfig={promptConfig}
-            onStartChat={handleStartChat}
-            canEidtInpus={canEditInpus}
-            savedInputs={currInputs as Record<string, any>}
-            onInputsChange={setCurrInputs}
-            plan={plan}
-          ></ConfigSence>
+          {isNewOpenChat && (
+            <ConfigSence
+              conversationName={conversationName}
+              hasSetInputs={hasSetInputs}
+              isPublicVersion={isPublicVersion}
+              siteInfo={siteInfo}
+              promptConfig={promptConfig}
+              onStartChat={handleStartChat}
+              canEidtInpus={canEditInpus}
+              savedInputs={currInputs as Record<string, any>}
+              onInputsChange={setCurrInputs}
+              plan={plan}
+            ></ConfigSence>
+          )
 
+          }
+
+          {renderSidebar()}
           {
             hasSetInputs && (
               <div className={cn(doShowSuggestion ? 'pb-[140px]' : (isResponsing ? 'pb-[113px]' : 'pb-[76px]'), 'relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full mx-auto mb-3.5 overflow-hidden')}>

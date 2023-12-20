@@ -92,7 +92,7 @@ const Sidebar: FC<ISidebarProps> = ({
       className={
         cn(
           (isInstalledApp || isUniversalChat) ? 'tablet:h-[calc(100vh_-_74px)]' : '',
-          'shrink-0 flex flex-col bg-white pc:w-[244px] tablet:w-[192px] mobile:w-full  border-r border-gray-200 mobile:h-full',
+          'shrink-0 flex flex-col bg-white pc:w-[244px] tablet:w-[192px] mobile:w-[240px]  border-r border-gray-200 mobile:h-screen',
         )
       }
     >
@@ -104,7 +104,13 @@ const Sidebar: FC<ISidebarProps> = ({
           icon_background={siteInfo.icon_background}
         />
       )}
-
+      <div className="flex flex-shrink-0 p-4 !pb-0">
+        <Button
+          onClick={() => onStartChat({})}
+          className="group block w-full flex-shrink-0 !justify-start !h-9 text-primary-600 items-center text-sm">
+          <PencilSquareIcon className="mr-2 h-4 w-4" /> {t('share.chat.newChat')}
+        </Button>
+      </div>
       <div className={'flex-grow flex flex-col h-0 overflow-y-auto overflow-x-hidden'}>
         {/* pinned list */}
         {hasPinned && (
@@ -152,13 +158,7 @@ const Sidebar: FC<ISidebarProps> = ({
             onDelete={onDelete}
           />
         </div>
-        <div className="flex flex-shrink-0 p-4 !pb-0">
-          <Button
-            onClick={() => onStartChat({})}
-            className="group block w-full flex-shrink-0 !justify-start !h-9 text-primary-600 items-center text-sm">
-            <PencilSquareIcon className="mr-2 h-4 w-4" /> {t('share.chat.newChat')}
-          </Button>
-        </div>
+
       </div>
       {!isUniversalChat && (
         <div className="flex flex-shrink-0 pr-4 pb-4 pl-4">
