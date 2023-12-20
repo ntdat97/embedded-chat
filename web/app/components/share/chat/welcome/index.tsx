@@ -11,6 +11,7 @@ import type { PromptConfig } from '@/models/debug'
 import { ToastContext } from '@/app/components/base/toast'
 import Select from '@/app/components/base/select'
 import { DEFAULT_VALUE_MAX_LEN } from '@/config'
+import ArrowRight from '@/app/components/base/icons/src/vender/line/arrows/ArrowRight'
 
 // regex to match the {{}} and replace it with a span
 const regex = /\{\{([^}]+)\}\}/g
@@ -26,6 +27,7 @@ export type IWelcomeProps = {
   savedInputs: Record<string, any>
   onInputsChange: (inputs: Record<string, any>) => void
   plan?: string
+  isNewUI?: boolean
 }
 
 const Welcome: FC<IWelcomeProps> = ({
@@ -39,6 +41,7 @@ const Welcome: FC<IWelcomeProps> = ({
   canEidtInpus,
   savedInputs,
   onInputsChange,
+  isNewUI,
 }) => {
   const { t } = useTranslation()
   const hasVar = promptConfig.prompt_variables.length > 0
@@ -313,10 +316,23 @@ const Welcome: FC<IWelcomeProps> = ({
         {isPublicVersion ? renderHasSetInputsPublic() : renderHasSetInputsPrivate()}
       </div>)
   }
+  if (isNewUI) {
+    return (
+      <div className='absolute bottom-10 left-1/2 -translate-x-[50%]'>
 
+        <button
+          className='bg-[#0057ff] hover:bg-[#3379ff] transition  py-[10px] px-4 rounded-[10px] flex flex-row gap-x-3 items-center justify-center'
+          onClick={handleChat}>
+          <span className='leading-5 text-sm font-semibold text-white '>Send us a message </span>
+          <ArrowRight className='w-4 h-4 text-gray-400' />
+        </button>
+      </div>
+    )
+  }
   return (
     <div className='relative mobile:min-h-[48px] tablet:min-h-[64px]'>
       {/* {hasSetInputs && renderHeader()} */}
+      {isNewUI && <button onClick={handleChat}>New chat</button>}
       <div className='mx-auto pc:w-[794px] max-w-full mobile:w-full px-3.5'>
         {/*  Has't set inputs  */}
         {
