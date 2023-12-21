@@ -71,7 +71,7 @@ const Main: FC<IMainProps> = ({
   const [inited, setInited] = useState<boolean>(false)
   const [plan, setPlan] = useState<string>('basic') // basic/plus/pro
   // in mobile, show sidebar by click button
-  const [isShowSidebar, { setTrue: showSidebar, setFalse: hideSidebar }] = useBoolean(true)
+
   // Can Use metadata(https://beta.nextjs.org/docs/api-reference/metadata) to set title. But it only works in server side client.
   useEffect(() => {
     if (siteInfo?.title) {
@@ -111,6 +111,11 @@ const Main: FC<IMainProps> = ({
   const [hasMore, setHasMore] = useState<boolean>(true)
   const [isNewOpenChat, setIsNewOpenChat] = useState<boolean>(false)
   const [hasPinnedMore, setHasPinnedMore] = useState<boolean>(true)
+  const [isShowSidebar, { setTrue: showSidebar, setFalse: hideSidebar }] = useBoolean(true)
+  const closeChat = () => {
+    showSidebar()
+    setIsNewOpenChat(false)
+  }
   const onMoreLoaded = ({ data: conversations, has_more }: any) => {
     setHasMore(has_more)
     if (isClearConversationList) {
@@ -280,6 +285,7 @@ const Main: FC<IMainProps> = ({
       setConversationIdChangeBecauseOfNew(false)
     }
     // trigger handleConversationSwitch
+    setIsNewOpenChat(true)
     setCurrConversationId(id, appId)
     setIsShowSuggestion(false)
     hideSidebar()
@@ -672,7 +678,6 @@ const Main: FC<IMainProps> = ({
         onDelete={handleDelete}
         isStartNewChatVisible={false}
         onStartChat={() => {
-          setIsNewOpenChat(true)
           handleConversationIdChange('-1')
         }}
       />
@@ -697,6 +702,8 @@ const Main: FC<IMainProps> = ({
           icon_background={siteInfo.icon_background}
           isMobile={isMobile}
           onShowSideBar={showSidebar}
+          isShowSidebar={isShowSidebar}
+          hasSetInputs={isNewOpenChat}
           onCreateNewChat={() => handleConversationIdChange('-1')}
         />
       )}
@@ -749,7 +756,7 @@ const Main: FC<IMainProps> = ({
           }
           {
             (hasSetInputs && !isShowSidebar) && (
-              <div className={cn(doShowSuggestion ? 'pb-[140px]' : (isResponsing ? 'pb-[113px]' : 'pb-[76px]'), 'relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full mx-auto mb-3.5 overflow-hidden')}>
+              <div className={cn(doShowSuggestion ? 'pb-[140px]' : (isResponsing ? 'pb-[113px]' : 'pb-[76px]'), 'relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full mx-auto mb-3.5 overflow-hidden pt-4')}>
                 <div className='h-full overflow-y-auto' ref={chatListDomRef}>
                   <Chat
                     chatList={chatList}
