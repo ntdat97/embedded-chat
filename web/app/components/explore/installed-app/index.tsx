@@ -3,7 +3,7 @@ import type { FC } from 'react'
 import React from 'react'
 import { useContext } from 'use-context-selector'
 import ExploreContext from '@/context/explore-context'
-import ChatApp from '@/app/components/share/chat'
+import ChatApp from '@/app/components/share/chat/embedded'
 import TextGenerationApp from '@/app/components/share/text-generation'
 import Loading from '@/app/components/base/loading'
 
@@ -32,7 +32,7 @@ const InstalledApp: FC<IInstalledAppProps> = ({
           <ChatApp isInstalledApp installedAppInfo={installedApp} />
         )
         : (
-          <TextGenerationApp isInstalledApp installedAppInfo={installedApp}/>
+          <TextGenerationApp isInstalledApp installedAppInfo={installedApp} />
         )}
     </div>
   )

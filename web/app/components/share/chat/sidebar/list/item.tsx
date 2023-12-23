@@ -64,7 +64,7 @@ const Item: FC<IItemProps> = ({
         /> */}
         <div className='flex flex-col gap-x-2 justify-center items-start '>
           <div >{item.name}</div>
-          <div className='font-normal text-sm text-[#666666]'>{dayjs(Number(item.created_at) * 1000).fromNow()}</div>
+          <div className='font-normal text-sm text-[#666666]'>{item.created_at ? dayjs(Number(item.created_at) * 1000).fromNow() : ''}</div>
         </div>
       </div>
 

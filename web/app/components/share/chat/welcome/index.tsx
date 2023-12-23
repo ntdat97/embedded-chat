@@ -41,7 +41,7 @@ const Welcome: FC<IWelcomeProps> = ({
   canEidtInpus,
   savedInputs,
   onInputsChange,
-  isNewUI,
+  isNewUI = false,
 }) => {
   const { t } = useTranslation()
   const hasVar = promptConfig.prompt_variables.length > 0
@@ -89,13 +89,15 @@ const Welcome: FC<IWelcomeProps> = ({
   }
 
   const renderHeader = () => {
-    return (
-      <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
-        <div className='text-gray-900'>{conversationName}</div>
-      </div>
-    )
+    if (!isNewUI) {
+      return (
+        <div className='absolute top-0 left-0 right-0 flex items-center justify-between border-b border-gray-100 mobile:h-12 tablet:h-16 px-8 bg-white'>
+          <div className='text-gray-900'>{conversationName}</div>
+        </div>
+      )
+    }
+    return null
   }
-
   const renderInputs = () => {
     return (
       <div className='space-y-3'>
@@ -331,7 +333,7 @@ const Welcome: FC<IWelcomeProps> = ({
   }
   return (
     <div className='relative mobile:min-h-[48px] tablet:min-h-[64px]'>
-      {/* {hasSetInputs && renderHeader()} */}
+      {renderHeader()}
       {isNewUI && <button onClick={handleChat}>New chat</button>}
       <div className='mx-auto pc:w-[794px] max-w-full mobile:w-full px-3.5'>
         {/*  Has't set inputs  */}

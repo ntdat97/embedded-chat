@@ -71,7 +71,7 @@ const Main: FC<IMainProps> = ({
   const [inited, setInited] = useState<boolean>(false)
   const [plan, setPlan] = useState<string>('basic') // basic/plus/pro
   // in mobile, show sidebar by click button
-  const [isShowSidebar, { setTrue: showSidebar, setFalse: hideSidebar }] = useBoolean(false)
+
   // Can Use metadata(https://beta.nextjs.org/docs/api-reference/metadata) to set title. But it only works in server side client.
   useEffect(() => {
     if (siteInfo?.title) {
@@ -109,7 +109,13 @@ const Main: FC<IMainProps> = ({
     setExistConversationInfo,
   } = useConversation()
   const [hasMore, setHasMore] = useState<boolean>(true)
+  const [isNewOpenChat, setIsNewOpenChat] = useState<boolean>(false)
   const [hasPinnedMore, setHasPinnedMore] = useState<boolean>(true)
+  const [isShowSidebar, { setTrue: showSidebar, setFalse: hideSidebar }] = useBoolean(true)
+  const closeChat = () => {
+    showSidebar()
+    setIsNewOpenChat(false)
+  }
   const onMoreLoaded = ({ data: conversations, has_more }: any) => {
     setHasMore(has_more)
     if (isClearConversationList) {
@@ -177,6 +183,7 @@ const Main: FC<IMainProps> = ({
   const [isChatStarted, { setTrue: setChatStarted, setFalse: setChatNotStarted }] = useBoolean(false)
   const handleStartChat = (inputs: Record<string, any>) => {
     createNewChat()
+    hideSidebar()
     setConversationIdChangeBecauseOfNew(true)
     setCurrInputs(inputs)
     setChatStarted()
@@ -278,6 +285,7 @@ const Main: FC<IMainProps> = ({
       setConversationIdChangeBecauseOfNew(false)
     }
     // trigger handleConversationSwitch
+    setIsNewOpenChat(true)
     setCurrConversationId(id, appId)
     setIsShowSuggestion(false)
     hideSidebar()
@@ -668,7 +676,10 @@ const Main: FC<IMainProps> = ({
         onUnpin={handleUnpin}
         controlUpdateList={controlUpdateConversationList}
         onDelete={handleDelete}
-        onStartChat={() => handleConversationIdChange('-1')}
+        isEmbedded={true}
+        onStartChat={() => {
+          handleConversationIdChange('-1')
+        }}
       />
     )
   }
@@ -690,7 +701,10 @@ const Main: FC<IMainProps> = ({
           icon={siteInfo.icon || ''}
           icon_background={siteInfo.icon_background}
           isMobile={isMobile}
+          isEmbedScene={true}
           onShowSideBar={showSidebar}
+          isShowSidebar={isShowSidebar}
+          hasSetInputs={isNewOpenChat}
           onCreateNewChat={() => handleConversationIdChange('-1')}
         />
       )}
@@ -708,7 +722,7 @@ const Main: FC<IMainProps> = ({
       >
         {/* sidebar */}
         {!isMobile && renderSidebar()}
-        {isMobile && isShowSidebar && (
+        {/* {isMobile && true && (
           <div className='fixed inset-0 z-50'
             style={{ backgroundColor: 'rgba(35, 56, 118, 0.2)' }}
             onClick={hideSidebar}
@@ -717,29 +731,34 @@ const Main: FC<IMainProps> = ({
               {renderSidebar()}
             </div>
           </div>
-        )}
+        )} */}
         {/* main */}
         <div className={cn(
           'h-full flex-grow flex flex-col overflow-y-auto',
         )
         }>
-          <ConfigSence
-            conversationName={conversationName}
-            hasSetInputs={hasSetInputs}
-            isPublicVersion={isPublicVersion}
-            siteInfo={siteInfo}
-            promptConfig={promptConfig}
-            onStartChat={handleStartChat}
-            canEidtInpus={canEditInpus}
-            savedInputs={currInputs as Record<string, any>}
-            onInputsChange={setCurrInputs}
-            plan={plan}
-          ></ConfigSence>
+          {isShowSidebar && renderSidebar()}
+          {isShowSidebar && (
+            <ConfigSence
+              conversationName={conversationName}
+              hasSetInputs={hasSetInputs}
+              isPublicVersion={isPublicVersion}
+              siteInfo={siteInfo}
+              promptConfig={promptConfig}
+              onStartChat={handleStartChat}
+              canEidtInpus={canEditInpus}
+              savedInputs={currInputs as Record<string, any>}
+              onInputsChange={setCurrInputs}
+              plan={plan}
+              isNewUI={true}
+            ></ConfigSence>
+          )
 
+          }
           {
-            hasSetInputs && (
+            (hasSetInputs && !isShowSidebar) && (
               <div className={cn(doShowSuggestion ? 'pb-[140px]' : (isResponsing ? 'pb-[113px]' : 'pb-[76px]'), 'relative grow h-[200px] pc:w-[794px] max-w-full mobile:w-full mx-auto mb-3.5 overflow-hidden')}>
-                <div className='h-full overflow-y-auto' ref={chatListDomRef}>
+                <div className='h-full overflow-y-auto pt-4' ref={chatListDomRef}>
                   <Chat
                     chatList={chatList}
                     onSend={handleSend}
