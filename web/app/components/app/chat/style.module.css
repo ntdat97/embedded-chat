@@ -111,6 +111,10 @@
   background: url(./icons/send.svg) center center no-repeat;
 }
 
+.sendBtnSmall {
+  background: url(./icons/send-small.svg) center center no-repeat;
+}
+
 .sendBtnActive {
   background-image: url(./icons/send-active.svg);
 }

@@ -325,7 +325,7 @@ const Welcome: FC<IWelcomeProps> = ({
         <button
           className='bg-[#0057ff] hover:bg-[#3379ff] transition  py-[10px] px-4 rounded-[10px] flex flex-row gap-x-3 items-center justify-center'
           onClick={handleChat}>
-          <span className='leading-5 text-sm font-semibold text-white '>Send us a message </span>
+          <span className='leading-5 text-sm font-semibold text-white '>New chat</span>
           <ArrowRight className='w-4 h-4 text-gray-400' />
         </button>
       </div>
